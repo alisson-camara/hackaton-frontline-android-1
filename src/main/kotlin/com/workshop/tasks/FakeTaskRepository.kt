@@ -1,4 +1,4 @@
-package com.workshop.model
+package com.workshop.tasks
 
 class FakeTaskRepository : TaskRepository {
     private val tasks = mutableListOf(

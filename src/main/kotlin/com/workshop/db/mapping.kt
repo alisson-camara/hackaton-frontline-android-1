@@ -1,7 +1,7 @@
 package com.workshop.db
 
-import com.workshop.model.Priority
-import com.workshop.model.Task
+import com.workshop.tasks.Priority
+import com.workshop.tasks.Task
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass

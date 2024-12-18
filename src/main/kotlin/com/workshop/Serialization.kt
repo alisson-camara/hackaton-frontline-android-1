@@ -1,8 +1,8 @@
 package com.workshop
 
-import com.workshop.model.Priority
-import com.workshop.model.Task
-import com.workshop.model.TaskRepository
+import com.workshop.tasks.Priority
+import com.workshop.tasks.Task
+import com.workshop.tasks.TaskRepository
 import io.ktor.http.*
 import io.ktor.serialization.*
 import io.ktor.serialization.kotlinx.json.*

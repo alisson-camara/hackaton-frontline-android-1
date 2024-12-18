@@ -1,7 +1,6 @@
 package com.workshop
 
-import com.workshop.model.FakeTaskRepository
-import com.workshop.model.PostgresTaskRepository
+import com.workshop.tasks.FakeTaskRepository
 import io.ktor.server.application.*
 
 fun main(args: Array<String>) {

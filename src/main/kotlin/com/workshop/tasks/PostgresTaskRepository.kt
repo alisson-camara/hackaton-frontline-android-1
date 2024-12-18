@@ -1,4 +1,4 @@
-package com.workshop.model
+package com.workshop.tasks
 
 import com.workshop.db.TaskDAO
 import com.workshop.db.TaskTable

@@ -1,29 +1,37 @@
 package com.workshop
 
-import com.workshop.model.TaskRepository
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import java.sql.Connection
-import java.sql.DriverManager
-import org.jetbrains.exposed.sql.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.http.content.staticResources
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
 
 fun Application.configureRouting() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            call.respondText(text = "500: $cause" , status = HttpStatusCode.InternalServerError)
+            call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
         }
     }
     routing {
 
         get("/") {
             call.respondText("Hello World!")
+        }
+
+        post("/create-room") {
+            val room = call.parameters["room"]
+            val moderator = call.parameters["moderator"]
+            if (room == null || moderator == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            call.respondText(call.parameters.toString())
         }
 
         // Static plugin. Try to access `/static/index.html`
