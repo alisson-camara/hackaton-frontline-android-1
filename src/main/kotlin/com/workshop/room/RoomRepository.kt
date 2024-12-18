@@ -17,20 +17,24 @@ class RoomRepository : IRoomRepository {
         }.id.value
     }
 
-    override suspend fun getRoom(roomName: String): Room? = suspendTransaction {
-        RoomDAO
+    override suspend fun getRoom(roomName: String): Pair<Int, Room>? = suspendTransaction {
+        val room = RoomDAO
             .find { (RoomTable.name eq roomName) }
             .limit(1)
-            .map(::daoToModel)
             .firstOrNull()
+        room?.let { safeRoom ->
+            return@suspendTransaction Pair(safeRoom.id.value, daoToModel(safeRoom))
+        } ?: return@suspendTransaction null
     }
 
-    override suspend fun getRoom(roomId: Int): Room? = suspendTransaction {
-        RoomDAO
+    override suspend fun getRoom(roomId: Int): Pair<Int, Room>? = suspendTransaction {
+        val room = RoomDAO
             .find { (RoomTable.id eq roomId) }
             .limit(1)
-            .map(::daoToModel)
             .firstOrNull()
+        room?.let { safeRoom ->
+            return@suspendTransaction Pair(safeRoom.id.value, daoToModel(safeRoom))
+        } ?: return@suspendTransaction null
     }
 
     override suspend fun getPlayersByRoomId(roomId: Int): List<Player> = suspendTransaction {
