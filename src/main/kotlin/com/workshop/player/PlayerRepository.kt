@@ -48,7 +48,7 @@ class PlayerRepository(
 
     override suspend fun resetVotes(roomId: Int) {
         suspendTransaction {
-            PlayerTable.update {
+            PlayerTable.update ( {PlayerTable.room eq roomId} ) {
                 it[point] = "?"
             }
         }

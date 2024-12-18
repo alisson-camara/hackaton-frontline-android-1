@@ -147,9 +147,9 @@ fun Application.configureRouting(
 
         post("/reset-votes") {
             val room = call.parameters["room"]
-            val player = call.parameters["player"]
+            val moderator = call.parameters["player"]
 
-            if (room == null || player == null) {
+            if (room == null || moderator == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -159,7 +159,12 @@ fun Application.configureRouting(
                 return@post
             }
 
-
+            roomRepository.getRoomByModerator(room, moderator)?.let { (roomId, _) ->
+                playerRepository.resetVotes(roomId)
+                sendResult(roomRepository, roomId, roomModel)
+            } ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+            }
         }
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
