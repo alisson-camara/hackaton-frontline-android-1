@@ -24,10 +24,7 @@ fun Application.configureRouting(
     }
     routing {
 
-        get("/") {
-            call.respondText("Hello World!")
-        }
-
+        // CREATE ROOM
         post("/create-room") {
             val room = call.parameters["room"]
             val moderator = call.parameters["moderator"]
@@ -36,24 +33,25 @@ fun Application.configureRouting(
                 return@post
             }
 
-            val roomModel = Room(
+            val newRoom = Room(
                 name = room,
                 moderator = moderator
             )
 
             val roomId = roomRepository.createRoom(
-                roomModel
+                newRoom
             )
 
             val newPlayer = Player(
                 name = moderator,
                 roomId = roomId
             )
-            playerRepository.createPlayer(player = newPlayer)
 
-            sendResult(roomRepository, roomId, roomModel)
+            playerRepository.createPlayer(player = newPlayer)
+            sendResult(roomRepository, roomId, newRoom)
         }
 
+        // JOIN ROOM
         post("/join-room") {
             val room = call.parameters["room"]
             val player = call.parameters["player"]
@@ -64,7 +62,7 @@ fun Application.configureRouting(
             }
 
             val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(HttpStatusCode.NotFound)
                 return@post
             }
 
@@ -72,11 +70,12 @@ fun Application.configureRouting(
                 name = player,
                 roomId = roomId
             )
-            playerRepository.createPlayer(player = newPlayer)
 
+            playerRepository.createPlayer(player = newPlayer)
             sendResult(roomRepository, roomId, roomModel)
         }
 
+        // REMOVER PLAYER
         post("/remove-player") {
             val room = call.parameters["room"]
             val moderator = call.parameters["player"]
@@ -88,7 +87,7 @@ fun Application.configureRouting(
             }
 
             val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(HttpStatusCode.NotFound)
                 return@post
             }
 
@@ -97,13 +96,14 @@ fun Application.configureRouting(
                 if (result) {
                     sendResult(roomRepository, roomId, roomModel)
                 } else {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.NotFound)
                 }
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
 
+        // GET ROOM
         get("/room") {
             val room = call.parameters["room"]
             if (room == null) {
@@ -118,6 +118,7 @@ fun Application.configureRouting(
             }
         }
 
+        // SEND PLAYER VOTE
         post("/sendvote") {
             val room = call.parameters["room"]
             val player = call.parameters["player"]
@@ -129,7 +130,7 @@ fun Application.configureRouting(
             }
 
             val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(HttpStatusCode.NotFound)
                 return@post
             }
 
@@ -138,13 +139,14 @@ fun Application.configureRouting(
                 if (result) {
                     sendResult(roomRepository, roomId, roomModel)
                 } else {
-                    call.respond(HttpStatusCode.BadRequest)
+                    call.respond(HttpStatusCode.NotFound)
                 }
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
 
+        // RESET ALL PLAYERS VOTE
         post("/reset-votes") {
             val room = call.parameters["room"]
             val moderator = call.parameters["player"]
@@ -155,7 +157,7 @@ fun Application.configureRouting(
             }
 
             val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(HttpStatusCode.NotFound)
                 return@post
             }
 
@@ -166,6 +168,7 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.BadRequest)
             }
         }
+
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
     }
