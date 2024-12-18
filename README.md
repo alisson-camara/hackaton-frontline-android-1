@@ -21,7 +21,7 @@ SSL: Yes
 
 {
   "name": "SalaDaPaula",
-  "currentTask": "Task 1",
+  "currentTask": "Task do Alisson",
   "moderator": "Paula",
   "players": [
     {
