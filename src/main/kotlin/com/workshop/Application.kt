@@ -13,7 +13,6 @@ fun main(args: Array<String>) {
 fun Application.module() {
     val repository = PostgresTaskRepository()
     //val taskRepository = FakeTaskRepository()
-    connectToPostgres(embedded = false)
     configureDatabases()
     configureSerialization(repository)
     configureRouting(RoomRepository(), PlayerRepository())
