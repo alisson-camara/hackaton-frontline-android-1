@@ -7,6 +7,7 @@ import com.workshop.db.RoomTable
 import com.workshop.db.suspendTransaction
 import com.workshop.player.Player
 import com.workshop.player.PlayerRepository.Companion.playerDaoToModel
+import org.jetbrains.exposed.sql.and
 
 class RoomRepository : IRoomRepository {
     override suspend fun createRoom(room: Room): Int = suspendTransaction {
@@ -41,6 +42,16 @@ class RoomRepository : IRoomRepository {
         PlayerDAO
             .find { (PlayerTable.room eq roomId) }
             .map(::playerDaoToModel)
+    }
+
+    override suspend fun getRoomByModerator(roomName: String, moderator: String): Pair<Int, Room>? = suspendTransaction {
+        val room = RoomDAO
+            .find { (RoomTable.moderator eq moderator) and (RoomTable.name eq roomName)}
+            .limit(1)
+            .firstOrNull()
+        room?.let { safeRoom ->
+            return@suspendTransaction Pair(safeRoom.id.value, daoToModel(safeRoom))
+        } ?: return@suspendTransaction null
     }
 
     private fun daoToModel(dao: RoomDAO) = Room(

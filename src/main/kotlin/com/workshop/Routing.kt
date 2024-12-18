@@ -5,17 +5,13 @@ import com.workshop.player.Player
 import com.workshop.room.IRoomRepository
 import com.workshop.room.Room
 import com.workshop.room.create
-import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.Application
-import io.ktor.server.application.install
-import io.ktor.server.http.content.staticResources
-import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.response.respond
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.RoutingContext
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import io.ktor.server.routing.routing
+import io.ktor.http.*
+import io.ktor.server.application.*
+import io.ktor.server.http.content.*
+import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 
 fun Application.configureRouting(
     roomRepository: IRoomRepository,
@@ -83,9 +79,10 @@ fun Application.configureRouting(
 
         post("/remove-player") {
             val room = call.parameters["room"]
-            val player = call.parameters["player"]
+            val moderator = call.parameters["player"]
+            val player = call.receiveText()
 
-            if (room == null || player == null) {
+            if (room == null || moderator == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -95,14 +92,18 @@ fun Application.configureRouting(
                 return@post
             }
 
-            val result = playerRepository.deletePlayer(player, roomId)
-
-            // TODO(finish query)
-            if (result) {
-                sendResult(roomRepository, roomId, roomModel)
-            } else {
+            roomRepository.getRoomByModerator(room, moderator)?.let { (roomId, _) ->
+                val result = playerRepository.deletePlayer(player, roomId)
+                if (result) {
+                    sendResult(roomRepository, roomId, roomModel)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            } ?: run {
                 call.respond(HttpStatusCode.BadRequest)
             }
+
+            // TODO(finish query)
         }
 
         get("/room") {

@@ -7,4 +7,5 @@ interface IRoomRepository {
     suspend fun getRoom(roomName: String): Pair<Int, Room>?
     suspend fun getRoom(roomId: Int): Pair<Int,Room>?
     suspend fun getPlayersByRoomId(roomId: Int): List<Player>
+    suspend fun getRoomByModerator(roomName: String, moderator: String): Pair<Int, Room>?
 }
