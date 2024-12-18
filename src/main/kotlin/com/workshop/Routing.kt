@@ -145,6 +145,22 @@ fun Application.configureRouting(
             }
         }
 
+        post("/reset-votes") {
+            val room = call.parameters["room"]
+            val player = call.parameters["player"]
+
+            if (room == null || player == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+
+        }
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
     }

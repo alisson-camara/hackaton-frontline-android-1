@@ -6,6 +6,8 @@ import com.workshop.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class PlayerRepository(
 ) : IPlayerRepository {
@@ -43,6 +45,14 @@ class PlayerRepository(
                     player.point = newPoint
                 }?.point == newPoint
         }
+
+    override suspend fun resetVotes(roomId: Int) {
+        suspendTransaction {
+            PlayerTable.update {
+                it[point] = "?"
+            }
+        }
+    }
 
     companion object {
         fun playerDaoToModel(dao: PlayerDAO) = Player(

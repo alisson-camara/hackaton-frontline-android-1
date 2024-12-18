@@ -5,4 +5,5 @@ interface IPlayerRepository {
     suspend fun deletePlayer(playerName: String, roomId: Int): Boolean
     suspend fun getPlayer(playerName: String, roomId: Int): Pair<Int, Player>?
     suspend fun updatePlayer(playerId: Int, newPoint: String): Boolean
+    suspend fun resetVotes(roomId: Int)
 }
