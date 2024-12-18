@@ -5,13 +5,18 @@ import com.workshop.player.Player
 import com.workshop.room.IRoomRepository
 import com.workshop.room.Room
 import com.workshop.room.create
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.http.content.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.http.content.staticResources
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.RoutingContext
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
 
 fun Application.configureRouting(
     roomRepository: IRoomRepository,
@@ -23,6 +28,33 @@ fun Application.configureRouting(
         }
     }
     routing {
+        get("/") {
+            call.respondText(
+                """
+        ### Endpoints: 
+        
+        # /create-room
+        ## Create a new room with the moderator
+        
+        # /join-room
+        ## Current player enters the room
+        
+        # /remove-player
+        ## Remove the selected player from the room
+        
+        # /room
+        ## Players retrieve the room information
+        
+        # /sendvote
+        ## Send the vote for the current player
+        
+        # /reset-votes
+        ## Reset the vote of all players inside the room
+        
+        Hello World!
+        """.trimIndent()
+            )
+        }
 
         // CREATE ROOM
         post("/create-room") {
