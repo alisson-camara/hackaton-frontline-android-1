@@ -4,7 +4,7 @@ import com.workshop.player.IPlayerRepository
 import com.workshop.player.Player
 import com.workshop.room.IRoomRepository
 import com.workshop.room.Room
-import com.workshop.room.RoomPlayer
+import com.workshop.room.create
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -55,7 +55,7 @@ fun Application.configureRouting(
             playerRepository.createPlayer(player = newPlayer)
 
             val localPlayers = roomRepository.getPlayersByRoomId(roomId)
-            val roomPlayer = RoomPlayer(
+            val roomPlayer = create(
                 room = roomModel,
                 players = localPlayers
             )
