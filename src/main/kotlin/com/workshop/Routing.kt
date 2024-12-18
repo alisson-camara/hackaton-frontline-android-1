@@ -82,7 +82,7 @@ fun Application.configureRouting(
             val moderator = call.parameters["player"]
             val player = call.receiveText()
 
-            if (room == null || moderator == null || player.isNotEmpty()) {
+            if (room == null || moderator == null || player.isEmpty()) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -123,7 +123,7 @@ fun Application.configureRouting(
             val player = call.parameters["player"]
             val point = call.receiveText()
 
-            if (room == null || player == null || point.isNotEmpty()) {
+            if (room == null || player == null || point.isEmpty()) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
