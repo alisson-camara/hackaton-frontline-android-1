@@ -1,5 +1,7 @@
 package com.workshop
 
+import com.workshop.player.PlayerRepository
+import com.workshop.room.RoomRepository
 import com.workshop.tasks.FakeTaskRepository
 import io.ktor.server.application.*
 
@@ -12,5 +14,5 @@ fun Application.module() {
     val taskRepository = FakeTaskRepository()
     configureSerialization(taskRepository)
     //configureDatabases()
-    configureRouting()
+    configureRouting(RoomRepository(), PlayerRepository())
 }

@@ -36,6 +36,19 @@ class RoomDAO(id: EntityID<Int>): IntEntity(id) {
     var moderator by RoomTable.moderator
 }
 
+class PlayerDAO(id: EntityID<Int>): IntEntity(id) {
+    companion object : IntEntityClass<PlayerDAO>(PlayerTable)
+
+    var name by PlayerTable.name
+    var point by PlayerTable.point
+    var room by RoomDAO referencedOn PlayerTable.room
+}
+
+
+
+
+
+// #################################
 class TaskDAO(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<TaskDAO>(TaskTable)
 

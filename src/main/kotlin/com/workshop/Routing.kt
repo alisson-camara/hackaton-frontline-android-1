@@ -1,5 +1,9 @@
 package com.workshop
 
+import com.workshop.player.IPlayerRepository
+import com.workshop.player.Player
+import com.workshop.room.IRoomRepository
+import com.workshop.room.Room
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -11,7 +15,10 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 
-fun Application.configureRouting() {
+fun Application.configureRouting(
+    roomRepository: IRoomRepository,
+    playerRepository: IPlayerRepository
+) {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(text = "500: $cause", status = HttpStatusCode.InternalServerError)
@@ -30,6 +37,20 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
+
+            val roomModel = Room(
+                name = room,
+                moderator = moderator
+            )
+            roomRepository.createRoom(
+                roomModel
+            )
+            playerRepository.createPlayer(
+                Player(
+                    name = moderator,
+                    room = roomModel
+                )
+            )
 
             call.respondText(call.parameters.toString())
         }
