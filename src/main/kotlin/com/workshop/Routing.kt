@@ -14,6 +14,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
+import kotlinx.coroutines.launch
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureRouting(
@@ -39,20 +40,21 @@ fun Application.configureRouting(
                 return@post
             }
 
-            transaction {
-            val roomModel = Room(
-                name = room,
-                moderator = moderator
-            )
-            roomRepository.createRoom(
-                roomModel
-            )
-            playerRepository.createPlayer(
-                Player(
-                    name = moderator,
-                    room = roomModel
+            launch {
+                val roomModel = Room(
+                    name = room,
+                    moderator = moderator
                 )
-            )
+
+                roomRepository.createRoom(
+                    roomModel
+                )
+                playerRepository.createPlayer(
+                    Player(
+                        name = moderator,
+                        room = roomModel
+                    )
+                )
             }
 
             call.respondText(call.parameters.toString())
