@@ -40,7 +40,7 @@ fun Application.configureRouting(
                 return@post
             }
 
-            launch {
+//            launch {
                 val roomModel = Room(
                     name = room,
                     moderator = moderator
@@ -49,21 +49,22 @@ fun Application.configureRouting(
                 roomRepository.createRoom(
                     roomModel
                 )
-                playerRepository.createPlayer(
-                    Player(
-                        name = moderator,
-                        room = roomModel
-                    )
-                )
-            }
+//                playerRepository.createPlayer(
+//                    Player(
+//                        name = moderator,
+//                        room = roomModel
+//                    )
+//                )
+                val selectedRoom = roomRepository.getRoom(room)
+                if (selectedRoom != null) {
+                    call.respond(selectedRoom)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+//            }
 
-            val selectedRoom = roomRepository.getRoom(room)
-            if (selectedRoom != null) {
-                call.respond(selectedRoom)
-            } else {
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
-            }
+
         }
 
         // Static plugin. Try to access `/static/index.html`

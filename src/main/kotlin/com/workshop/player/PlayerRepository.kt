@@ -8,6 +8,7 @@ class PlayerRepository : IPlayerRepository {
         PlayerDAO.new {
             name = player.name
             point = "?"
+//            room = player.room
         }
     }
 }
