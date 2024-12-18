@@ -82,7 +82,7 @@ fun Application.configureRouting(
             val moderator = call.parameters["player"]
             val player = call.receiveText()
 
-            if (room == null || moderator == null) {
+            if (room == null || moderator == null || player.isNotEmpty()) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@post
             }
@@ -102,8 +102,6 @@ fun Application.configureRouting(
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest)
             }
-
-            // TODO(finish query)
         }
 
         get("/room") {
@@ -119,6 +117,34 @@ fun Application.configureRouting(
                 call.respond(HttpStatusCode.NotFound)
             }
         }
+
+        post("/sendvote") {
+            val room = call.parameters["room"]
+            val player = call.parameters["player"]
+            val point = call.receiveText()
+
+            if (room == null || player == null || point.isNotEmpty()) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            playerRepository.getPlayer(player, roomId)?.let { (playerId, _) ->
+                val result = playerRepository.updatePlayer(playerId, point)
+                if (result) {
+                    sendResult(roomRepository, roomId, roomModel)
+                } else {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+            } ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+            }
+        }
+
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
     }

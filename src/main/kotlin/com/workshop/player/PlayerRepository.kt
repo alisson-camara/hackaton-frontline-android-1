@@ -2,7 +2,6 @@ package com.workshop.player
 
 import com.workshop.db.PlayerDAO
 import com.workshop.db.PlayerTable
-import com.workshop.db.TaskTable
 import com.workshop.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
@@ -18,12 +17,32 @@ class PlayerRepository(
         }
     }
 
-    override suspend fun deletePlayer(playerName: String, roomId: Int): Boolean = suspendTransaction {
-        val rowsDeleted = PlayerTable.deleteWhere {
-            (PlayerTable.room eq roomId) and (PlayerTable.name eq playerName)
+    override suspend fun deletePlayer(playerName: String, roomId: Int): Boolean =
+        suspendTransaction {
+            val rowsDeleted = PlayerTable.deleteWhere {
+                (PlayerTable.room eq roomId) and (PlayerTable.name eq playerName)
+            }
+            rowsDeleted == 1
         }
-        rowsDeleted == 1
-    }
+
+    override suspend fun getPlayer(playerName: String, roomId: Int): Pair<Int, Player>? =
+        suspendTransaction {
+            val room = PlayerDAO
+                .find { (PlayerTable.name eq playerName) and (PlayerTable.room eq roomId) }
+                .limit(1)
+                .firstOrNull()
+            room?.let { safeRoom ->
+                return@suspendTransaction Pair(safeRoom.id.value, playerDaoToModel(safeRoom))
+            } ?: return@suspendTransaction null
+        }
+
+    override suspend fun updatePlayer(playerId: Int, newPoint: String): Boolean =
+        suspendTransaction {
+            return@suspendTransaction PlayerDAO
+                .findByIdAndUpdate(playerId) { player ->
+                    player.point = newPoint
+                }?.point == newPoint
+        }
 
     companion object {
         fun playerDaoToModel(dao: PlayerDAO) = Player(
