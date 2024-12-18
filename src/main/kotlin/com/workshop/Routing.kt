@@ -57,7 +57,13 @@ fun Application.configureRouting(
                 )
             }
 
-            call.respondText(call.parameters.toString())
+            val selectedRoom = roomRepository.getRoom(room)
+            if (selectedRoom != null) {
+                call.respond(selectedRoom)
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
         }
 
         // Static plugin. Try to access `/static/index.html`
