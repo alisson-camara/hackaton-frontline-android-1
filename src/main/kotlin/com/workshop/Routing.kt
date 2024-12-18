@@ -49,12 +49,6 @@ fun Application.configureRouting(
                 roomRepository.createRoom(
                     roomModel
                 )
-//                playerRepository.createPlayer(
-//                    Player(
-//                        name = moderator,
-//                        room = roomModel
-//                    )
-//                )
                 val selectedRoom = roomRepository.getRoom(room)
                 if (selectedRoom != null) {
                     call.respond(selectedRoom)
@@ -62,6 +56,14 @@ fun Application.configureRouting(
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
+
+                playerRepository.createPlayer(
+                    Player(
+                        name = moderator,
+                        room = selectedRoom
+                    )
+                )
+
 //            }
 
 

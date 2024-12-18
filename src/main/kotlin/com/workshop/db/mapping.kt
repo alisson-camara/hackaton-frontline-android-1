@@ -41,7 +41,7 @@ class PlayerDAO(id: EntityID<Int>): IntEntity(id) {
 
     var name by PlayerTable.name
     var point by PlayerTable.point
-    var room by RoomDAO referencedOn PlayerTable.room
+    var room by PlayerTable.room
 }
 
 

@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class Player(
     val name: String,
     val point: String = "?",
-    val room: Room
+    val roomId: String
 )
