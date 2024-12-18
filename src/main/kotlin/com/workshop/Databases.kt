@@ -2,6 +2,7 @@ package com.workshop
 
 import com.workshop.db.PlayerTable
 import com.workshop.db.RoomTable
+import com.workshop.db.TaskTable
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -30,6 +31,7 @@ fun Application.configureDatabases() {
         password = password
     )
     transaction {
+        SchemaUtils.create(TaskTable)
         SchemaUtils.create(RoomTable)
         SchemaUtils.create(PlayerTable)
     }
