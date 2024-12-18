@@ -5,6 +5,7 @@ import com.workshop.db.PlayerTable
 import com.workshop.db.TaskTable
 import com.workshop.db.suspendTransaction
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 
 class PlayerRepository(
@@ -19,8 +20,7 @@ class PlayerRepository(
 
     override suspend fun deletePlayer(playerName: String, roomId: Int): Boolean = suspendTransaction {
         val rowsDeleted = PlayerTable.deleteWhere {
-            (PlayerTable.room eq roomId)
-            (PlayerTable.name eq playerName)
+            (PlayerTable.room eq roomId) and (PlayerTable.name eq playerName)
         }
         rowsDeleted == 1
     }
