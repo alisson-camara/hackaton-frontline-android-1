@@ -1,14 +1,12 @@
 package com.workshop.room
 
+import com.workshop.db.PlayerDAO
+import com.workshop.db.PlayerTable
 import com.workshop.db.RoomDAO
 import com.workshop.db.RoomTable
-import com.workshop.db.TaskDAO
-import com.workshop.db.TaskTable
-import com.workshop.db.daoToModel
 import com.workshop.db.suspendTransaction
-import com.workshop.tasks.Priority
-import com.workshop.tasks.Task
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import com.workshop.player.Player
+import com.workshop.player.PlayerRepository.Companion.playerDaoToModel
 
 class RoomRepository : IRoomRepository {
     override suspend fun createRoom(room: Room): Int = suspendTransaction {
@@ -33,6 +31,12 @@ class RoomRepository : IRoomRepository {
             .limit(1)
             .map(::daoToModel)
             .firstOrNull()
+    }
+
+    override suspend fun getPlayersByRoomId(roomId: Int): List<Player> = suspendTransaction {
+        PlayerDAO
+            .find { (PlayerTable.room eq roomId) }
+            .map(::playerDaoToModel)
     }
 
     private fun daoToModel(dao: RoomDAO) = Room(

@@ -4,6 +4,7 @@ import com.workshop.player.IPlayerRepository
 import com.workshop.player.Player
 import com.workshop.room.IRoomRepository
 import com.workshop.room.Room
+import com.workshop.room.RoomPlayer
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -14,8 +15,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import kotlinx.coroutines.launch
-import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.configureRouting(
     roomRepository: IRoomRepository,
@@ -49,20 +48,25 @@ fun Application.configureRouting(
                 roomModel
             )
 
-            playerRepository.createPlayer(
-                Player(
-                    name = moderator,
-                    roomId = roomId
-                )
+            val newPlayer = Player(
+                name = moderator,
+                roomId = roomId
+            )
+            playerRepository.createPlayer(player = newPlayer)
+
+            val localPlayers = roomRepository.getPlayersByRoomId(roomId)
+            val roomPlayer = RoomPlayer(
+                room = roomModel,
+                players = localPlayers
             )
 
             val selectedRoom = roomRepository.getRoom(roomId)
-                if (selectedRoom != null) {
-                    call.respond(selectedRoom)
-                } else {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@post
-                }
+            if (selectedRoom != null) {
+                call.respond(roomPlayer)
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
         }
 
         // Static plugin. Try to access `/static/index.html`

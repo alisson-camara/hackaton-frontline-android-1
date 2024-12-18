@@ -1,6 +1,5 @@
 package com.workshop.player
 
-import com.workshop.room.Room
 import kotlinx.serialization.Serializable
 
 @Serializable

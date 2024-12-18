@@ -25,7 +25,7 @@ object RoomTable : IntIdTable("room") {
 object PlayerTable: IntIdTable("player") {
     val name = varchar("name", 50)
     val point = varchar("current_task", 50)
-    val room = reference("room_id", RoomTable)
+    val room = integer("room_id")
 }
 
 class RoomDAO(id: EntityID<Int>): IntEntity(id) {
@@ -41,7 +41,7 @@ class PlayerDAO(id: EntityID<Int>): IntEntity(id) {
 
     var name by PlayerTable.name
     var point by PlayerTable.point
-    var room by PlayerTable.room
+    var roomId by PlayerTable.room
 }
 
 
