@@ -81,6 +81,29 @@ fun Application.configureRouting(
             sendResult(roomRepository, roomId, roomModel)
         }
 
+        post("/remove-player") {
+            val room = call.parameters["room"]
+            val player = call.parameters["player"]
+
+            if (room == null || player == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val (roomId, roomModel) = roomRepository.getRoom(room) ?: run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+
+            val result = playerRepository.deletePlayer(player, roomId)
+
+            if (result) {
+                sendResult(roomRepository, roomId, roomModel)
+            } else {
+                call.respond(HttpStatusCode.BadRequest)
+            }
+        }
+
         // Static plugin. Try to access `/static/index.html`
         staticResources("/static", "static")
     }
