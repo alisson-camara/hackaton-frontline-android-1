@@ -1,7 +1,9 @@
 package com.workshop.room
 
-interface IRoomRepository {
-    suspend fun createRoom(room: Room)
+import com.workshop.db.suspendTransaction
 
+interface IRoomRepository {
+    suspend fun createRoom(room: Room): Int
     suspend fun getRoom(roomName: String): Room?
+    suspend fun getRoom(roomId: Int): Room?
 }
